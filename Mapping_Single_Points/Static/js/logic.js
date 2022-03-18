@@ -30,3 +30,10 @@ L.circleMarker([34.0522, -118.2437], {
     //the radius is measured in meters
     radius: 300
 }).addTo(map);
+
+//adding polygons
+// let polygon = L.polygon([
+//     [51.509, -0.08],
+//     [51.503, -0.06],
+//     [51.51, -0.047]
+// ]).addTo(map);
