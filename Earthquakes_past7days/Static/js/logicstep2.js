@@ -23,8 +23,8 @@ let baseMaps = {
 //initialize map
 //set coordinates and zoom level
 var map = L.map('mapid', {
-    center: [43.7, -79.3],
-    zoom: 11,
+    center: [39.5, -98.5],
+    zoom: 3,
     layers: [streets]
 });
 
@@ -32,20 +32,39 @@ var map = L.map('mapid', {
 L.control.layers(baseMaps).addTo(map);
 
 //accessing airport data
-let torontoHoods = "https://raw.githubusercontent.com/statles/Mapping_Earthquakes/main/torontoNeighborhoods.json"
+let earthquakes = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson"
 
 //add a geoJSON layer, grabbing GeoJSON data
-d3.json(torontoHoods).then(function(data) {
-    //creating a GeoJOSN layer with retrieved data
-    L.geoJson(data, {
-        color: 'blue',
-        fillColor: 'yellow',
-        fillOpacity: '0.2',
-        weight: 1,
-        onEachFeature: function(feature, layer) {
-            console.log(layer);
-            layer.bindPopup(`<h2>Airline: ${feature.properties.AREA_NAME}</h2>`);
+d3.json(earthquakes).then(function(data) {
+    //this function returns the style data for each earthquake
+    //the magnitude is passed as a function to calculate the radius
+    function styleInfo(feature) {
+        return {
+            opacity: 1,
+            fillOpacity: 1,
+            fillColor: "#ffae42",
+            color: "#000000",
+            radius: getRadius(feature.properties.mag),
+            stroke: true,
+            weight: 0.5
+        };
+    }
+
+    //this function calculates the radius
+    function getRadius(magnitude) {
+        if(magnitude === 0) {
+            return 1;
         }
+        return magnitude * 4;
+} 
+    //creating a GeoJOSN layer with retrieved data
+    L.geoJSON(data, {
+        //create a circle marker for each point
+        pointToLayer: function(feature, latlng) {
+            return L.circleMarker(latlng);
+        },
+        //set style for each circle marker
+        style: styleInfo
     }).addTo(map);
 });
 
